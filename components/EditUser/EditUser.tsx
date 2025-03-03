@@ -2,14 +2,18 @@
 
 import { useState } from "react";
 import { SingleValue } from "react-select";
-import { User } from "@/interfaces/user.intarface";
-import { UserData } from "@/interfaces/user.intarface";
+import { MetaData } from "@/interfaces/metaData.interface";
+import { User } from "@/interfaces/user.interface";
 import styles from "./EditUser.module.css";
 import UserSelector from "@/components/UserSelector/UserSelector";
 import EditUserForm from "@/components/EditUserForm/EditUserForm";
 import ActionButtons from "@/components/ActionButtons/ActionButtons";
 
-function EditUser({ users }: UserData) {
+interface IEditUser {
+  users: User[];
+};
+
+function EditUser({ users }: IEditUser ) {
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
 
   const handleUserChange = (selectedOption: SingleValue<{ value: string; label: string }>) => {

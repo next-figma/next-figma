@@ -1,4 +1,5 @@
-import { User } from "@/interfaces/user.intarface";
+import { MetaData } from "@/interfaces/metaData.interface";
+import { User } from "@/interfaces/user.interface";
 import { UserService } from "@/services/user.service";
 import EditUser from "@/components/EditUser/EditUser";
 

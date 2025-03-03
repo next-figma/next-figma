@@ -2,7 +2,7 @@
 
 import Select from "react-select";
 import { SingleValue } from "react-select";
-import { User } from "@/interfaces/user.intarface";
+import { User } from "@/interfaces/user.interface";
 import styles from "./UserSelector.module.css";
 
 export default function UserSelector({
