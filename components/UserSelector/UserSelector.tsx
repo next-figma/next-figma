@@ -2,8 +2,8 @@
 
 import Select from "react-select";
 import { SingleValue } from "react-select";
-import { User } from "@/types/user";
-import "./UserSelector.css";
+import { User } from "@/interfaces/user.interface";
+import styles from "./UserSelector.module.css";
 
 export default function UserSelector({
   users,
@@ -20,17 +20,17 @@ export default function UserSelector({
   }));
 
   return (
-    <div className="container">
-      <div className="inputGroup">
-        <label htmlFor="user" className="label">
+    <div className={styles.container}>
+      <div className={styles.inputGroup}>
+        <label htmlFor="user" className={styles.label}>
           User
         </label>
         <Select
           id="user"
           options={options}
           onChange={onChange}
-          className="selectInput"
-          placeholder="Select a name..."
+          placeholder="Select a name"
+          className={styles.selectInput}
         />
       </div>
     </div>
