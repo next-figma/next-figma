@@ -1,6 +1,6 @@
 import { Status, Country, Department } from "./metaData.interface"; 
 
-export interface User {
+export interface IUser {
   name: string;
   status: Status;
   country: Country;
