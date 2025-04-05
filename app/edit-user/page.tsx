@@ -1,11 +1,19 @@
-import { MetaData } from "@/interfaces/metaData.interface";
-import { User } from "@/interfaces/user.interface";
-import { UserService } from "@/services/user.service";
+import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
+import { getQueryClient } from "../get-query-client";
+import { getAllUsers, GET_ALL_USERS } from "@/services/user";
 import EditUser from "@/components/EditUser/EditUser";
 
-const EditUserPage = async () => {
-  const users: User[] = await UserService.getUsers();
-  return <EditUser users={users} />;
-}
+export default async function EditUserPage() {
+  const queryClient = getQueryClient();
 
-export default EditUserPage;
+  await queryClient.prefetchQuery({
+    queryKey: [GET_ALL_USERS],
+    queryFn: () => getAllUsers(),
+  });
+
+  return (
+    <HydrationBoundary state={dehydrate(queryClient)}>
+      <EditUser />
+    </HydrationBoundary>
+  );
+}

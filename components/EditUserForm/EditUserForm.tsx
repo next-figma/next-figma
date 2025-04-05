@@ -1,6 +1,6 @@
 "use client";
 
-import { User } from "@/interfaces/user.interface";
+import { IUser } from "@/interfaces/user.interface";
 import { useState, useEffect } from "react";
 import Form from "next/form";
 import Select from "react-select";
@@ -9,11 +9,7 @@ import departments from "@/data/departments.json";
 import statuses from "@/data/statuses.json";
 import styles from "./EditUserForm.module.css";
 
-interface IEditUserForm {
-  user: User | null;
-};
-
-export default function EditUserForm({ user }: IEditUserForm ) {
+export default function EditUserForm({ user }: { user: IUser | null }) {
   const [formValues, setFormValues] = useState({
     name: "",
     status: "",

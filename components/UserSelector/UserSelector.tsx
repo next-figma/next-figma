@@ -2,19 +2,19 @@
 
 import Select from "react-select";
 import { SingleValue } from "react-select";
-import { User } from "@/interfaces/user.interface";
+import { IUser } from "@/interfaces/user.interface";
 import styles from "./UserSelector.module.css";
 
 export default function UserSelector({
   users,
   onChange,
 }: {
-  users: User[];
+  users?: IUser[];
   onChange: (
     selectedOption: SingleValue<{ value: string, label: string }>
   ) => void;
 }) {
-  const options = users.map((user) => ({ 
+  const options = users?.map((user) => ({ 
     value: user.name, 
     label: user.name,
   }));
