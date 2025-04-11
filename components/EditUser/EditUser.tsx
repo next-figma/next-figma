@@ -5,6 +5,7 @@ import { SingleValue } from "react-select";
 import { useQuery } from "@tanstack/react-query";
 import { IUser } from "@/interfaces/user.interface";
 import { getAllUsers, GET_ALL_USERS } from "@/services/user";
+import { useMetaData } from "@/hooks/useMetaData";
 import styles from "./EditUser.module.css";
 import UserSelector from "@/components/UserSelector/UserSelector";
 import EditUserForm from "@/components/EditUserForm/EditUserForm";
@@ -12,17 +13,39 @@ import ActionButtons from "@/components/ActionButtons/ActionButtons";
 
 export default function EditUser() {
   const [selectedUser, setSelectedUser] = useState<IUser | null>(null);
+  // if (isUsersError) return <div>Error: {usersError.message}</div>;
 
   const {
     data: users,
-    error, 
-    isError,
+    error: usersError, 
+    isError: isUsersError,
   } = useQuery({
     queryKey: [GET_ALL_USERS],
     queryFn: () => getAllUsers(),
   });
 
-  if (isError) return <div>Error: {error.message}</div>;
+  const {
+    statuses,
+    countries,
+    departments,
+  } = useMetaData();
+
+  const hasError =
+    isUsersError || statuses.isError || countries.isError || departments.isError;
+
+  if (hasError) {
+    const errors = [
+      usersError,
+      statuses.error,
+      countries.error,
+      departments.error,
+    ]
+      .filter(Boolean)
+      .map((e) => (e as Error).message)
+      .join(", ");
+
+    return <div>Error: {errors}</div>;
+  }
 
   const handleChange = (selectedOption: SingleValue<{ value: string; label: string }>) => {
     const user = users?.find((user) => user.name === selectedOption?.value);
@@ -36,7 +59,12 @@ export default function EditUser() {
           Edit User
         </h1>
         <UserSelector users={users} onChange={handleChange} />
-        <EditUserForm user={selectedUser} />
+        <EditUserForm 
+          user={selectedUser}
+          statuses={statuses.data}
+          countries={countries.data}
+          departments={departments.data}
+        />
         <ActionButtons />
       </div>
     </div>
