@@ -1,9 +1,18 @@
 import "./ActionButtons.css";
 
-export default function ActionButtons() {
+interface IActionButtons {
+  hasChanges: boolean;
+  onUndo: () => void;
+}
+
+export default function ActionButtons({ hasChanges, onUndo }: IActionButtons) {
   return (
     <div className="actionButtons">
-      <button className="button undo">
+      <button 
+        type="button" 
+        onClick={onUndo}
+        className={`button undo ${!hasChanges ? "disabled" : ""}`} 
+      >
         Undo
       </button>
       <button className="button save">

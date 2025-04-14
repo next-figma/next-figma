@@ -1,6 +1,5 @@
 .actionButtons {
-  padding: 16px;
-  margin-top: 40px;
+  margin-top: 75px;
   display: flex;
   gap: 1rem;
   justify-content: flex-end;
@@ -29,6 +28,9 @@
 
 .save {
   width: 175px;
+}
+
+.disabled {
   pointer-events: none;
   color: rgba(0, 0, 0, 0.2);
 }

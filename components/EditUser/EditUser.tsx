@@ -9,11 +9,9 @@ import { useMetaData } from "@/hooks/useMetaData";
 import styles from "./EditUser.module.css";
 import UserSelector from "@/components/UserSelector/UserSelector";
 import EditUserForm from "@/components/EditUserForm/EditUserForm";
-import ActionButtons from "@/components/ActionButtons/ActionButtons";
 
 export default function EditUser() {
   const [selectedUser, setSelectedUser] = useState<IUser | null>(null);
-  // if (isUsersError) return <div>Error: {usersError.message}</div>;
 
   const {
     data: users,
@@ -65,7 +63,6 @@ export default function EditUser() {
           countries={countries.data}
           departments={departments.data}
         />
-        <ActionButtons />
       </div>
     </div>
   );

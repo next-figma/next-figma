@@ -3,18 +3,9 @@
 import Form from "next/form";
 import Select from "react-select";
 import styles from "./EditUserForm.module.css";
-import { useState, useEffect } from "react";
-import { IUser } from "@/interfaces/user.interface";
-import { IStatus } from "@/interfaces/status.interface";
-import { ICountry } from "@/interfaces/country.interface";
-import { IDepartment } from "@/interfaces/department.interface";
-
-interface IEditUserForm {
-  user: IUser | null;
-  statuses: IStatus[];
-  countries: ICountry[];
-  departments: IDepartment[];
-}
+import ActionButtons from "../ActionButtons/ActionButtons";
+import { useState, useEffect, useRef, useMemo } from "react";
+import { IEditUserForm } from "@/interfaces/editUserForm.interface";
 
 export default function EditUserForm({
   user, 
@@ -29,14 +20,18 @@ export default function EditUserForm({
     department: "",
   });
 
+  const initialFormValues = useRef(formValues);
+
   useEffect(() => {
     if (user) {
-      setFormValues({
+      const newFormValues = {
         name: user.name || "",
         status: user.status?.name || "",
         country: user.country?.name || "",
         department: user.department?.name || "",
-      });
+      };
+      setFormValues(newFormValues);
+      initialFormValues.current = newFormValues;
     }
   }, [user]);
 
@@ -59,6 +54,14 @@ export default function EditUserForm({
       values.map((item) => ({ value: item.name, label: item.name })),
     ])
   );
+
+  const handleUndo = () => {
+    setFormValues({ ...initialFormValues.current });
+  };
+
+  const hasChanges = useMemo(() => {
+    return JSON.stringify(formValues) !== JSON.stringify(initialFormValues.current);
+  }, [formValues]);
 
   return (
     <div className={styles.container}>
@@ -138,6 +141,8 @@ export default function EditUserForm({
           />
         </div>
       </Form>
+
+      <ActionButtons hasChanges={hasChanges} onUndo={handleUndo} />
     </div>
   );
 }
