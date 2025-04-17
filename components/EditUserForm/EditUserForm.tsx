@@ -5,8 +5,7 @@ import Select from "react-select";
 import styles from "./EditUserForm.module.css";
 import ActionButtons from "../ActionButtons/ActionButtons";
 import { useState, useEffect, useRef, useMemo } from "react";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { updateUser, GET_ALL_USERS } from "@/services/user";
+import { useUpdateUser } from "@/hooks/useUpdateUser";
 import { IEditUserForm } from "@/interfaces/editUserForm.interface";
 
 export default function EditUserForm({
@@ -15,8 +14,6 @@ export default function EditUserForm({
   countries, 
   departments,
 }: IEditUserForm) {
-  const queryClient = useQueryClient();
-
   const [formValues, setFormValues] = useState({
     name: "",
     status: "",
@@ -26,31 +23,7 @@ export default function EditUserForm({
 
   const initialFormValues = useRef(formValues);
 
-  const { mutate: saveUser } = useMutation({
-    mutationFn: (formData: typeof formValues) => {
-      const { _id } = user || {};
-
-      if (!_id) {
-        throw new Error("User ID is missing");
-      }
-
-      const status = statuses.find((s) => (s.name) === formData.status);
-      const country = countries.find((c) => (c.name) === formData.country);
-      const department = departments.find((d) => (d.name) === formData.department);
-
-      if (!status || !country || !department) {
-        throw new Error("Missing required data for user update");
-      }
-
-      return updateUser(_id, { ...formData, status, country, department });
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: [GET_ALL_USERS] });
-    },
-    onError: (error) => {
-      console.error("Failed to update user", error);
-    },
-  });
+  const mutation = useUpdateUser({ user, statuses, countries, departments });
 
   useEffect(() => {
     if (user) {
@@ -85,12 +58,12 @@ export default function EditUserForm({
     ])
   );
 
-  const handleUndo = () => {
-    setFormValues({ ...initialFormValues.current });
+  const handleSave = () => {
+    mutation.mutate(formValues);
   };
 
-  const handleSave = () => {
-    saveUser(formValues);
+  const handleUndo = () => {
+    setFormValues({ ...initialFormValues.current });
   };
 
   const hasChanges = useMemo(() => {
