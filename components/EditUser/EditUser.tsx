@@ -2,23 +2,52 @@
 
 import { useState } from "react";
 import { SingleValue } from "react-select";
-import { MetaData } from "@/interfaces/metaData.interface";
-import { User } from "@/interfaces/user.interface";
+import { useQuery } from "@tanstack/react-query";
+import { IUser } from "@/interfaces/user.interface";
+import { getAllUsers, GET_ALL_USERS } from "@/services/user";
+import { useMetaData } from "@/hooks/useMetaData";
 import styles from "./EditUser.module.css";
 import UserSelector from "@/components/UserSelector/UserSelector";
 import EditUserForm from "@/components/EditUserForm/EditUserForm";
-import ActionButtons from "@/components/ActionButtons/ActionButtons";
 
-interface IEditUser {
-  users: User[];
-};
+export default function EditUser() {
+  const [selectedUser, setSelectedUser] = useState<IUser | null>(null);
 
-function EditUser({ users }: IEditUser ) {
-  const [selectedUser, setSelectedUser] = useState<User | null>(null);
+  const {
+    data: users,
+    error: usersError, 
+    isError: isUsersError,
+  } = useQuery({
+    queryKey: [GET_ALL_USERS],
+    queryFn: () => getAllUsers(),
+  });
 
-  const handleUserChange = (selectedOption: SingleValue<{ value: string; label: string }>) => {
-    const userData = users.find((user) => user.name === selectedOption?.value);
-    setSelectedUser(userData || null);
+  const {
+    statuses,
+    countries,
+    departments,
+  } = useMetaData();
+
+  const hasError =
+    isUsersError || statuses.isError || countries.isError || departments.isError;
+
+  if (hasError) {
+    const errors = [
+      usersError,
+      statuses.error,
+      countries.error,
+      departments.error,
+    ]
+      .filter(Boolean)
+      .map((e) => (e as Error).message)
+      .join(", ");
+
+    return <div>Error: {errors}</div>;
+  }
+
+  const handleChange = (selectedOption: SingleValue<{ value: string; label: string }>) => {
+    const user = users?.find((user) => user.name === selectedOption?.value);
+    setSelectedUser(user || null);
   };
 
   return (
@@ -27,12 +56,14 @@ function EditUser({ users }: IEditUser ) {
         <h1 className={styles.editUserTitle}>
           Edit User
         </h1>
-        <UserSelector users={users} onChange={handleUserChange} />
-        <EditUserForm user={selectedUser} />
-        <ActionButtons />
+        <UserSelector users={users} onChange={handleChange} />
+        <EditUserForm 
+          user={selectedUser}
+          statuses={statuses.data}
+          countries={countries.data}
+          departments={departments.data}
+        />
       </div>
     </div>
   );
 }
-
-export default EditUser;

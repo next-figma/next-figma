@@ -1,19 +1,19 @@
 "use client";
 
-import { User } from "@/interfaces/user.interface";
-import { useState, useEffect } from "react";
 import Form from "next/form";
 import Select from "react-select";
-import countries from "@/data/countries.json";
-import departments from "@/data/departments.json";
-import statuses from "@/data/statuses.json";
 import styles from "./EditUserForm.module.css";
+import ActionButtons from "../ActionButtons/ActionButtons";
+import { useState, useEffect, useRef, useMemo } from "react";
+import { useUpdateUser } from "@/hooks/useUpdateUser";
+import { IEditUserForm } from "@/interfaces/editUserForm.interface";
 
-interface IEditUserForm {
-  user: User | null;
-};
-
-export default function EditUserForm({ user }: IEditUserForm ) {
+export default function EditUserForm({
+  user,
+  statuses, 
+  countries, 
+  departments,
+}: IEditUserForm) {
   const [formValues, setFormValues] = useState({
     name: "",
     status: "",
@@ -21,14 +21,20 @@ export default function EditUserForm({ user }: IEditUserForm ) {
     department: "",
   });
 
+  const initialFormValues = useRef(formValues);
+
+  const mutation = useUpdateUser({ user, statuses, countries, departments });
+
   useEffect(() => {
     if (user) {
-      setFormValues({
+      const newFormValues = {
         name: user.name || "",
         status: user.status?.name || "",
         country: user.country?.name || "",
         department: user.department?.name || "",
-      });
+      };
+      setFormValues(newFormValues);
+      initialFormValues.current = newFormValues;
     }
   }, [user]);
 
@@ -51,6 +57,18 @@ export default function EditUserForm({ user }: IEditUserForm ) {
       values.map((item) => ({ value: item.name, label: item.name })),
     ])
   );
+
+  const handleSave = () => {
+    mutation.mutate(formValues);
+  };
+
+  const handleUndo = () => {
+    setFormValues({ ...initialFormValues.current });
+  };
+
+  const hasChanges = useMemo(() => {
+    return JSON.stringify(formValues) !== JSON.stringify(initialFormValues.current);
+  }, [formValues]);
 
   return (
     <div className={styles.container}>
@@ -130,6 +148,8 @@ export default function EditUserForm({ user }: IEditUserForm ) {
           />
         </div>
       </Form>
+
+      <ActionButtons hasChanges={hasChanges} onUndo={handleUndo} onSave={handleSave } />
     </div>
   );
 }

@@ -1,8 +1,11 @@
-import { Status, Country, Department } from "./metaData.interface"; 
+import { IStatus } from "./status.interface";
+import { ICountry } from "./country.interface";
+import { IDepartment } from "./department.interface";
 
-export interface User {
+export interface IUser {
+  _id?: string;
   name: string;
-  status: Status;
-  country: Country;
-  department: Department;
+  status: IStatus;
+  country: ICountry;
+  department: IDepartment;
 }
